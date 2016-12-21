@@ -1,13 +1,23 @@
-source ~/.zsh/zsh-vcs-prompt/zshrc.sh
+#source ~/.zsh/zsh-vcs-prompt/zshrc.sh
 ZSH_VCS_PROMPT_ENABLE_CACHING='true'
 RPROMPT='$(svn_prompt_info)'
 
-local user="%{$fg[green]%}%n@%m%{$reset_color%}%(?.=>.$fg[red][%?]=>$reset_color)"
+USER_COLOR="red"
+HOSTNAME_COLOR="green"
+if [[ "$HOSTNAME" = vps* ]]; then
+  TOP_FUNC="$(date)"
+  HOSTNAME_COLOR="red"
+elif [ "$USER"	= jc ]; then
+  TOP_FUNC=`battery_charge()`
+  USER_COLOR="green"
+fi
+
+local user="%{$fg[$USER_COLOR]%}%n@%m%{$reset_color%}%(?.=>.$fg[$HOSTNAME_COLOR][%?]=>$reset_color)"
 
 precmd() {
   RIGHT=""
   LEFT="$FG[135]${(r:$COLUMNS::_:)}$reset_color
-$(battery_charge)$FG[165]$(pwd)$reset_color"
+$FG[099]$TOP_FUNC:$FG[165]$(pwd)$reset_color"
   RIGHTWIDTH=$(($COLUMNS-${#LEFT}))
   print $LEFT${(l:$RIGHTWIDTH:)RIGHT}
 }
